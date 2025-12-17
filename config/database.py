@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:password@host:5432/chronos_assessment"
+SQLALCHEMY_DATABASE_URL = "postgresql://chronos_assessment_user:uKJdLGDx6OQ8lcTngcGW9tV0ODYnQjUz@dpg-d5188mh5pdvs73cjo5t0-a/chronos_assessment"
 # SQLALCHEMY_DATABASE_URL = "postgresql://postgres:password@localhost:5432/chronos_assessment"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
