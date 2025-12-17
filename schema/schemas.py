@@ -101,14 +101,16 @@ class StudentDisplay(BaseModel):
     full_name: str
     reg_number: str
     class_id: int
-    student_class: Optional[schemas.ClassDisplay] = None
-    class_name: Optional[str] = None
     
-    @model_validator(mode='after')
-    def set_class_name(self) -> 'StudentDisplay':
-        if hasattr(self, 'student_class') and self.student_class:
-            self.class_name = self.student_class.name
-        return self
+    
+    @model_validator(mode='before')
+    @classmethod
+    def extract_fields_from_orm(cls, data):
+        if hasattr(data, 'student_class') and data.student_class:
+            data.class_name = data.student_class.name
+        return data
+
+    class_name: Optional[str] = None
     
     class Config:
         from_attributes = True
