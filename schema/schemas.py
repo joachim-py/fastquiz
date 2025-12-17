@@ -101,6 +101,7 @@ class StudentDisplay(BaseModel):
     full_name: str
     reg_number: str
     class_id: int
+    student_class: Optional[schemas.ClassDisplay] = None
     class_name: Optional[str] = None
     
     @model_validator(mode='after')
