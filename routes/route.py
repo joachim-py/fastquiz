@@ -660,7 +660,7 @@ async def create_subject(subject_data: schemas.Subject, admin_user: dict = Depen
     return subject_model
 
 # Get all subjects
-@admin_router.get("/subjects/", response_model=List[schemas.SubjectDisplay])
+@admin_router.get("/subjects", response_model=List[schemas.SubjectDisplay])
 async def read_all_subjects(admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
     """Retrieves all subjects."""
     
