@@ -1,5 +1,5 @@
 from datetime import datetime, date, time
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, computed_field, model_validator
 from typing import List, Optional
 
 # Option
@@ -101,6 +101,13 @@ class StudentDisplay(BaseModel):
     full_name: str
     reg_number: str
     class_id: int
+    class_name: Optional[str] = None
+    
+    @model_validator(mode='after')
+    def set_class_name(self) -> 'StudentDisplay':
+        if hasattr(self, 'student_class') and self.student_class:
+            self.class_name = self.student_class.name
+        return self
     
     class Config:
         from_attributes = True
