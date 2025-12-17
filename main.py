@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routes.route import exam_router, admin_router
 from config.database import SessionLocal, engine
 import uvicorn
@@ -11,6 +12,19 @@ app = FastAPI(
     title="ChronosAssessment: Scheduled CBT Platform API",
     description="Backend API for secure, time-bound, class-specific computer-based testing.",
     version="1.0.0",
+)
+
+origins = [
+    "http://localhost",
+    "https://fastquiz-skmb.onrender.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(
