@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from schema import schemas
 from typing import Optional
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "-dt8lK9P8ULpvQQ-GDm5EQoUSkbF-CabowHCUUepbGMGGs8p6kZIUEljfS_57M13IZVjz0jG8H9-Y4GwuWT7Xw")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/exam-login")
