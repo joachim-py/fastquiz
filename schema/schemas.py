@@ -147,26 +147,7 @@ class ExamScheduleDisplay(BaseModel):
     duration_minutes: int
     subject: Optional[SubjectDisplay] = None
     exam_class: Optional[ClassDisplay] = None
-    subject_name: Optional[str] = None
-    class_name: Optional[str] = None
     exam_password: str
-    
-    @model_validator(mode='before')
-    @classmethod
-    def extract_schedule_relations(cls, data):
-        # Extract Subject Name
-        subj = getattr(data, 'subject', None)
-        if subj:
-            if isinstance(data, dict): data['subject_name'] = subj.name
-            else: setattr(data, 'subject_name', subj.name)
-            
-        # Extract Class Name
-        e_class = getattr(data, 'exam_class', None)
-        if e_class:
-            if isinstance(data, dict): data['class_name'] = e_class.name
-            else: setattr(data, 'class_name', e_class.name)
-            
-        return data
     
     class Config:
         from_attributes = True
