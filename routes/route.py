@@ -790,6 +790,18 @@ async def read_questions(group_id: int, admin_user: dict = Depends(get_current_a
         
     return question_model
 
+# Read all Questions
+@admin_router.get("/groups/questions/", response_model=schemas.QuestionStudentDisplay)
+async def read_question(admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
+    """Retrieves a single question and its options for a specific group."""
+    
+    question_model = db.query(models.Question).options(joinedload(models.Question.options)).all()
+    
+    if not question_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No questions found.")
+        
+    return question_model
+
 # Read Question for a specific scheduled exam
 @admin_router.get("/groups/{group_id}/questions/{question_id}", response_model=schemas.QuestionStudentDisplay)
 async def read_question(group_id: int, question_id: int, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
