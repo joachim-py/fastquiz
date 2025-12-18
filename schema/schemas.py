@@ -33,7 +33,6 @@ class QuestionStudentDisplay(BaseModel):
 
 
 class QuestionGroup(BaseModel):
-    """Base schema for creating or updating a Question Group."""
     instruction_text: str
     group_title: Optional[str] = None
     display_order: int
@@ -42,15 +41,12 @@ class QuestionGroupDisplay(QuestionGroup):
     """Schema for displaying a Group to the Admin."""
     id: int
     schedule_id: int
+    questions: List[QuestionStudentDisplay] = [] 
     
     class ConfigDict:
         from_attributes = True    
     
 class QuestionGroupStudentDisplay(QuestionGroup):
-    """
-    Schema for displaying a Group to the student during the exam load.
-    Includes the nested list of questions.
-    """
     id: int
     questions: List['QuestionStudentDisplay'] = []
     
@@ -72,7 +68,7 @@ class SubjectDisplay(BaseModel):
         if hasattr(self, 'questions') and self.questions is not None:
              return len(self.questions)
         return 0 
-    
+ 
     class Config:
         from_attributes = True
 
@@ -87,7 +83,7 @@ class SubjectScoreDetail(BaseModel):
     def subject_percentage(self) -> float:
         if self.total_answered_questions == 0:
             return 0.0
-        return (self.correct_answers / self.total_answered_questions) * 100
+        return round((self.correct_answers / self.total_answered_questions) * 100, 2)
 
 # Student
 class Student(BaseModel):
@@ -101,16 +97,22 @@ class StudentDisplay(BaseModel):
     full_name: str
     reg_number: str
     class_id: int
+    student_class: Optional['ClassDisplay'] = None
+    class_name: Optional[str] = None
     
     
     @model_validator(mode='before')
     @classmethod
-    def extract_fields_from_orm(cls, data):
-        if hasattr(data, 'student_class') and data.student_class:
-            data.class_name = data.student_class.name
+    def extract_student_relations(cls, data):
+        # Handle cases where data is an ORM object or a dict
+        student_class = getattr(data, 'student_class', None)
+        if student_class:
+            # Manually inject class_name for convenience
+            if isinstance(data, dict):
+                data['class_name'] = student_class.name
+            else:
+                setattr(data, 'class_name', student_class.name)
         return data
-
-    class_name: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -137,14 +139,34 @@ class ExamSchedule(BaseModel):
     exam_password: str
 
 class ExamScheduleDisplay(BaseModel):
-    """Display model for one scheduled exam instance (e.g., SS1 English on 11/12/2025)."""
     id: int
     subject_id: int
     class_id: int
     exam_date: date
     start_time: time
     duration_minutes: int
-    subject_name: str
+    subject: Optional[SubjectDisplay] = None
+    exam_class: Optional[ClassDisplay] = None
+    subject_name: Optional[str] = None
+    class_name: Optional[str] = None
+    exam_password: str
+    
+    @model_validator(mode='before')
+    @classmethod
+    def extract_schedule_relations(cls, data):
+        # Extract Subject Name
+        subj = getattr(data, 'subject', None)
+        if subj:
+            if isinstance(data, dict): data['subject_name'] = subj.name
+            else: setattr(data, 'subject_name', subj.name)
+            
+        # Extract Class Name
+        e_class = getattr(data, 'exam_class', None)
+        if e_class:
+            if isinstance(data, dict): data['class_name'] = e_class.name
+            else: setattr(data, 'class_name', e_class.name)
+            
+        return data
     
     class Config:
         from_attributes = True
