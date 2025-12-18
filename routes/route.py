@@ -135,6 +135,7 @@ async def start_exam_session(schedule_id: int, current_user_data: schemas.TokenD
         "subject_name": exam_schedule.subject.name, 
         "duration_minutes": exam_schedule.duration_minutes,
         "question_groups": exam_schedule.question_groups,
+        "total_questions": total_questions
     }
 
     return schemas.ExamStartResponse.model_validate(response_data)
