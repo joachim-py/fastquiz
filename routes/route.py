@@ -812,10 +812,9 @@ async def read_questions(group_id: int, admin_user: dict = Depends(get_current_a
     return question_model
 
 # Read all Questions
-@admin_router.get("/questions/", response_model=schemas.QuestionStudentDisplay)
+@admin_router.get("/questions/", response_model=list[schemas.QuestionStudentDisplay])
 async def read_question(admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
-    """Retrieves a single question and its options for a specific group."""
-    
+    """Retrieves all questions and their options."""    
     question_model = db.query(models.Question).options(joinedload(models.Question.options)).all()
     
     if not question_model:
