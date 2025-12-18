@@ -778,6 +778,18 @@ async def create_question_and_options(group_id: int, question_data: schemas.Ques
     
     return question_model_complete
 
+# Read all Questions for a specific question group
+@admin_router.get("/groups/{group_id}/questions", response_model=list[schemas.QuestionStudentDisplay])
+async def read_questions(group_id: int, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
+    
+    question_model = db.query(models.Question).options(joinedload(models.Question.options)
+            ).filter(models.Question.group_id == group_id).all()
+    
+    if not question_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found for this group.")
+        
+    return question_model
+
 # Read Question for a specific scheduled exam
 @admin_router.get("/groups/{group_id}/questions/{question_id}", response_model=schemas.QuestionStudentDisplay)
 async def read_question(group_id: int, question_id: int, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
