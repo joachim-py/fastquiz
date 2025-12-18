@@ -462,6 +462,27 @@ async def read_schedules(class_id: Optional[int] = None, exam_date: Optional[dat
         for s in schedules
     ]
 
+# Get all schedules for a perticular date
+@admin_router.get("/schedules/{exam_date}", response_model=List[schemas.ExamScheduleDisplay])
+async def read_schedules(exam_date: Optional[date] = None, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
+    """Retrieves all exam schedules, optionally filtered by class or date."""
+    shedule_model = db.query(models.ExamSchedule).options(joinedload(models.ExamSchedule.subject), joinedload(models.ExamSchedule.exam_class))
+    
+    if exam_date is not None:
+        shedule_model = shedule_model.filter(models.ExamSchedule.exam_date == exam_date)
+        
+    shedule_model = shedule_model.filter(models.ExamSchedule.exam_date == datetime.now().date())
+        
+    schedules = shedule_model.all()
+    
+    return [
+        schemas.ExamScheduleDisplay.model_validate(
+            {**s.__dict__, "subject_name": s.subject.name}
+        )
+        for s in schedules
+    ]
+
+
 # Update Schedule
 @admin_router.put("/schedules/{schedule_id}", response_model=schemas.ExamScheduleDisplay)
 async def update_schedule(schedule_id: int, schedule_data: schemas.ExamSchedule, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
