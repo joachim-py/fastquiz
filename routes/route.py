@@ -445,7 +445,7 @@ async def create_schedule(schedule_data: schemas.ExamSchedule, admin_user: dict 
 @admin_router.get("/schedules", response_model=List[schemas.ExamScheduleDisplay])
 async def read_schedules(class_id: Optional[int] = None, exam_date: Optional[date] = None, admin_user: dict = Depends(get_current_admin_user), db: Session = Depends(get_db)):
     """Retrieves all exam schedules, optionally filtered by class or date."""
-    shedule_model = db.query(models.ExamSchedule).options(joinedload(models.ExamSchedule.subject))
+    shedule_model = db.query(models.ExamSchedule).options(joinedload(models.ExamSchedule.subject), joinedload(models.ExamSchedule.exam_class))
     
     if class_id is not None:
         shedule_model = shedule_model.filter(models.ExamSchedule.class_id == class_id)
