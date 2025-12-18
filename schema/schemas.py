@@ -19,6 +19,7 @@ class OptionStudentDisplay(BaseModel):
 class Question(BaseModel):
     """Defines a single quiz question."""
     question_text: str
+    question_number: int
     options: List[Option]
 
 class QuestionStudentDisplay(BaseModel):

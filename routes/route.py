@@ -754,6 +754,7 @@ async def create_question_and_options(group_id: int, question_data: schemas.Ques
     question_model = models.Question(
         group_id=group_id,
         question_text=question_data.question_text,
+        question_number=question_data.question_number
     )
     db.add(question_model)
     db.flush() 
@@ -817,6 +818,7 @@ async def update_question(group_id: int, question_id: int, question_data: schema
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exactly one option must be marked as correct.")
 
     question_model.question_text = question_data.question_text
+    question_model.question_number = question_data.question_number
 
     db.query(models.Option).filter(models.Option.question_id == question_id).delete(synchronize_session=False)
     db.flush()
